@@ -127,6 +127,7 @@ int main(){
 ```
 
 后来考虑到使用换底公式，可以比较快的得到正确的答案
+
 <img src="http://chart.googleapis.com/chart?cht=tx&chl= x = lg (n^{k})=klg(n)" style="border:none;">
 
 <img src="http://chart.googleapis.com/chart?cht=tx&chl= x = 10^{x} = 10^{klg(n)}" style="border:none;">
