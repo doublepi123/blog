@@ -6,7 +6,10 @@ tags:
 
 ## Leading and Trailing
 
-You are given two integers: **n** and **k**, your task is to find the most significant three digits, and least significant three digits of <img src="http://chart.googleapis.com/chart?cht=tx&chl= n^{k}" style="border:none;">
+You are given two integers: **n** and **k**, your task is to find the most significant three digits, and least significant three digits of 
+$$
+n^{k}
+$$
 
 
 Input
@@ -127,10 +130,13 @@ int main(){
 ```
 
 后来考虑到使用换底公式，可以比较快的得到正确的答案
+$$
+x = lg (n^{k})=klg(n)
+$$
 
-<img src="http://chart.googleapis.com/chart?cht=tx&chl= x = lg (n^{k})=klg(n)" style="border:none;">
-
-<img src="http://chart.googleapis.com/chart?cht=tx&chl= x = 10^{x} = 10^{klg(n)}" style="border:none;">
+$$
+10^{x} = 10^{klg(n)}
+$$
 
 把x的小数部分取出，前三位小数即为所求，取出小数部分可以直接用浮点数减去取整之后的数即可即：
 
