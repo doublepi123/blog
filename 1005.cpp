@@ -2,6 +2,7 @@
 using namespace std;
 const int MAXN = 1e5+10;
 int t[MAXN];
+queue <int> q;
 int main(){
     ios::sync_with_stdio(0);
     int T;
@@ -14,13 +15,37 @@ int main(){
             cin >> t[i];
         }
         ans += k;
+        int now = t[n-1];
         sort(t,t+n);
-        for(int i = n-1 ; i > 0 ; i--){
-            if(t[i] > k)
-                ans += t[i];
-            else ans += k;
+        int p = n-2;
+        while(true){
+            if(p < 0 && now == 0&&q.empty()) break;
+            while(now > k){
+                now -= k;
+                q.push(t[p--]);
+                ans += k;
+            }
+            if(p >= 0){
+                if(q.empty()){
+                    now = 0;
+                    q.push(t[p--]);
+                    ans += k;
+                }
+                else{
+                    ans += now;
+                    now = 0;
+                }
+            }
+            else{
+                ans += now;
+                now = 0;
+            }
+            if(now == 0 && !q.empty()){
+                now = q.front();
+                q.pop();
+            }
         }
-        ans += t[0];
+
         cout << ans << endl;
     }
 }
