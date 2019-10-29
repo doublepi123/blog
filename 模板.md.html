@@ -1,0 +1,317 @@
+<h2>快速幂运算</h2>
+
+<p>```c++
+long long qpower(long long a,long long b,long long mod){
+    if(b == 1) return a;
+    long long ans=1;
+    while(b)
+    {
+        if(b&amp;1)
+            ans=ans<em>a%mod;
+        b>>=1;
+        a=a</em>a%mod;
+    }
+    return ans;
+}</p>
+
+<p>```
+   求乘法逆元的时候若b为素数直接令b = mod-2 即可 
+  必要的时候使用BigInteger或者__int128防止溢出                                                 </p>
+
+<h2>欧几里得算法</h2>
+
+<p><code>c++
+int gcd(int a, int b){
+    return b == 0? a: gcd(b,a%b);
+}
+</code></p>
+
+<h2>扩展欧几里得算法</h2>
+
+<p><code>c++
+LL exgcd(LL a,LL b,LL &amp;x,LL&amp;y){
+    if(a==0&amp;&amp;b==0) return -1;//无最大公约数
+    if(b==0){x=1;y=0;return a;}
+    LL d=exgcd(b,a%b,y,x);
+    y -= a/b*x;
+    return d;
+}
+</code></p>
+
+<h3>扩展欧几里得算法求乘法逆元</h3>
+
+<p><code>c++
+LL mod_reverse(LL a,LL n){
+    LL x,y;
+    LL d=exgcd(a,n,x,y);
+    if(d==1) return (x%n+n)%n;
+    else return -1;
+}
+</code></p>
+
+<p>​                                                                   </p>
+
+<h2>生成素数</h2>
+
+<p>```c++
+const int MAXN = 1e4;
+int primer[MAXN+1];
+void getprimer(){
+    memset(primer,0,sizeof(primer));
+    for(int i = 2 ; i &lt;= MAXN ; i++){
+        if(!primer[i]) primer[++primer[0]] = i;
+        for(int j = 1 ; j &lt;= primer[0] &amp;&amp; primer[j] &lt;= MAXN / i; j++){
+            primer[primer[j]*i] = 1;
+            if(i%primer[j] == 0) break;
+        }
+    }
+}</p>
+
+<p>```</p>
+
+<h2>因式分解</h2>
+
+<p><em>n</em> <em>带分解整数                      &amp;tot</em> <em>质因数个数</em></p>
+
+<p><em>a</em> <em>质因数值                        b</em> <em>质因数指数</em></p>
+
+<p>​                                                                                      </p>
+
+<p><code>
+void factor (int n, int a[MAXN],int b[MAXN],int &amp;tot) {
+    int temp, i, now;
+    temp = (int) ((double) sqrt(n) + 1);
+    tot = 0;
+    now = n;
+    for (i = 2; i &lt;= temp; i++)
+        if (now % i == 0) {
+            a[++tot] = i;
+            b[tot] = 0;
+            while (now % i == 0) {
+                ++b[tot];
+                now /= i;
+            }
+        }
+    if (now != 1) {
+        a[++tot] = now;
+        b[tot] = 1;
+    }
+}
+</code></p>
+
+<p>对于1e14以内的数分解质因数</p>
+
+<p><code>c++
+const int MAXN = 1e7+10;
+bool notprime[MAXN];//值为false 表示素数，值为true 表示非素数
+int p[(int)1e5],e[(int)1e5],factcnt;
+void init(){
+    memset(notprime,false,sizeof(notprime));
+    notprime[0]=notprime[1]=true;
+    for(int i=2;i&lt;MAXN;i++)
+        if(!notprime[i]){
+            if(i&gt;MAXN/i)continue;
+            for(int j=i*i;j&lt;MAXN;j+=i)
+                notprime[j]=true;
+        }
+}
+void fact(int n){
+    int &amp;cnt = factcnt;
+    cnt = 0;
+    for(int i = 2 ; i &lt; n ; i++){
+        if(n%i == 0){
+            e[++cnt] = 1;
+            p[cnt] = i;
+            n/= i;
+        }
+        while(n % i == 0) {
+            n /= i;
+            e[cnt]++;
+        }
+        if(!notprime[n]){
+            p[++cnt] = n;
+            e[cnt] = 1;
+            break;
+        }
+    }
+}
+</code></p>
+
+<p>​                                                                              </p>
+
+<h2>欧拉函数</h2>
+
+<p><em>线性欧拉筛</em>
+<code>c++
+void phi_table(int n, int* phi) {
+  for (int i = 2; i &lt;= n; i++) phi[i] = 0;
+  phi[1] = 1;
+  for (int i = 2; i &lt;= n; i++)
+    if (!phi[i])
+      for (int j = i; j &lt;= n; j += i) {
+        if (!phi[j]) phi[j] = j;
+        phi[j] = phi[j] / i * (i - 1);
+      }
+}
+</code></p>
+
+<p><em>只求一个数的欧拉函数</em></p>
+
+<p><code>c++
+int euler_phi(int n) {
+  int m = int(sqrt(n + 0.5));
+  int ans = n;
+  for (int i = 2; i &lt;= m; i++)
+    if (n % i == 0) {
+      ans = ans / i * (i - 1);
+      while (n % i == 0) n /= i;
+    }
+  if (n &gt; 1) ans = ans / n * (n - 1);
+  return ans;
+}
+</code></p>
+
+<h2>Mobius函数计算</h2>
+
+<p><code>c++
+void pre() {
+  mu[1] = 1;
+  for (int i = 2; i &lt;= 1e7; ++i) {
+    if (!v[i]) mu[i] = -1, p[++tot] = i;
+    for (int j = 1; j &lt;= tot &amp;&amp; i &lt;= 1e7 / p[j]; ++j) {
+      v[i * p[j]] = 1;
+      if (i % p[j] == 0) {
+        mu[i * p[j]] = 0;
+        break;
+      }
+      mu[i * p[j]] = -mu[i];
+    }
+  }
+</code></p>
+
+<p>​                                                                             </p>
+
+<h2>进制转换</h2>
+
+<p>返回X进制数对应的y进制数</p>
+
+<p>```c++
+string transform(int x , int y , string s){
+    string res = "";
+    int sum = 0;
+    for(int i = 0 ; i &lt; s.length() ; i++){
+        if(s[i] == '-') continue;
+        if(s[i] >= '0' &amp;&amp; s[i] &lt;= '9'){
+            sum = sum * x + s[i] - '0';
+        }else{
+            sum = sum * x + s[i] - 'A' + 10;
+        }
+    }
+    while(sum){
+        char tmp = sum % y;
+        sum /= y;
+        if(tmp &lt;= 9){
+            tmp += '0';
+        }else {
+            tmp = tmp - 10 +'A';
+        }
+        res = tmp + res;
+    }
+    if(res.length() == 0) res = "0";
+    if(s[0] == '-') res = '-' + res;
+    return res;
+}</p>
+
+<p>```</p>
+
+<h2>线段树</h2>
+
+<h4>注意：针对本套模板s = 1，t = n，是整体区间，p=1为根节点，s,t是修改区间</h4>
+
+<h5>建树</h5>
+
+<p><code>c++
+void build(int s, int t, int p) {
+// 对 [s,t] 区间建立线段树,当前根的编号为 p
+    if (s == t) {
+        d[p] = a[s];
+        return;
+    }
+    int m = (s + t) / 2;
+    build(s, m, p * 2), build(m + 1, t, p * 2 + 1);
+    // 递归对左右区间建树
+    d[p] = d[p * 2] + d[(p * 2) + 1];
+}
+</code></p>
+
+<p>采用堆式存储（  2p是 p的左儿子,2p+1 是p的右儿子），若有 n个叶子结点，则 d 数组的范围最大为
+    $2^{\lfloor logn \rfloor+1}$</p>
+
+<h5>区间修改（给定区间内每一个元素加值）//如果是乘值，那么直接把代码中的+=替换成*=即可</h5>
+
+<p>注意：因为使用了b数组，因此不同操作的查询函数是不一样的，需要自行修改</p>
+
+<p><code>c++
+void update(int l, int r, int c, int s, int t, int p) {
+  // [l,r] 为修改区间,c 为被修改的元素的变化量,[s,t] 为当前节点包含的区间,p
+  // 为当前节点的编号
+  if (l &lt;= s &amp;&amp; t &lt;= r) {
+    d[p] += (t - s + 1) * c, b[p] += c;
+    return;
+  }  // 当前区间为修改区间的子集时直接修改当前节点的值,然后打标记,结束修改
+  int m = (s + t) / 2;
+  if (b[p] &amp;&amp; s != t) {
+    // 如果当前节点的懒标记非空,则更新当前节点两个子节点的值和懒标记值
+    d[p * 2] += b[p] * (m - s + 1), d[p * 2 + 1] += b[p] * (t - m);
+    b[p * 2] += b[p], b[p * 2 + 1] += b[p];  // 将标记下传给子节点
+    b[p] = 0;                                // 清空当前节点的标记
+  }
+  if (l &lt;= m) update(l, r, c, s, m, p * 2);
+  if (r &gt; m) update(l, r, c, m + 1, t, p * 2 + 1);
+  d[p] = d[p * 2] + d[p * 2 + 1];
+}
+int getsum(int l, int r, int s, int t, int p) {
+  // [l,r] 为查询区间,[s,t] 为当前节点包含的区间,p 为当前节点的编号
+  if (l &lt;= s &amp;&amp; t &lt;= r)
+    return d[p];  // 当前区间为询问区间的子集时直接返回当前区间的和
+  int m = (s + t) / 2, sum = 0;
+  if (l &lt;= m) sum += getsum(l, r, s, m, p * 2);
+  // 如果左儿子代表的区间 [l,m] 与询问区间有交集,则递归查询左儿子
+  if (r &gt; m) sum += getsum(l, r, m + 1, t, p * 2 + 1);
+  // 如果右儿子代表的区间 [m+1,r] 与询问区间有交集,则递归查询右儿子
+  return sum;
+}
+</code></p>
+
+<h5>区间修改（修改值）</h5>
+
+<p><code>c++
+void update(int l, int r, int c, int s, int t, int p) {
+  if (l &lt;= s &amp;&amp; t &lt;= r) {
+    d[p] = (t - s + 1) * c, b[p] = c;
+    return;
+  }
+  int m = (s + t) / 2;
+  if (b[p]) {
+    d[p * 2] = b[p] * (m - s + 1), d[p * 2 + 1] = b[p] * (t - m),
+          b[p * 2] = b[p * 2 + 1] = b[p];
+    b[p] = 0;
+  }
+  if (l &lt;= m) update(l, r, c, s, m, p * 2);
+  if (r &gt; m) update(l, r, c, m + 1, t, p * 2 + 1);
+  d[p] = d[p * 2] + d[p * 2 + 1];
+}
+int getsum(int l, int r, int s, int t, int p) {
+  if (l &lt;= s &amp;&amp; t &lt;= r) return d[p];
+  int m = (s + t) / 2;
+  if (b[p]) {
+    d[p * 2] = b[p] * (m - s + 1), d[p * 2 + 1] = b[p] * (t - m),
+          b[p * 2] = b[p * 2 + 1] = b[p];
+    b[p] = 0;
+  }
+  int sum = 0;
+  if (l &lt;= m) sum = getsum(l, r, s, m, p * 2);
+  if (r &gt; m) sum += getsum(l, r, m + 1, t, p * 2 + 1);
+  return sum;
+}
+</code></p>
